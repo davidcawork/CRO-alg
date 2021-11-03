@@ -1,6 +1,6 @@
 #!/usr/bin/python3
 
-from coral import Coral
+from src.coral import Coral
 import scipy.io as sio
 import numpy as npy
 import math
@@ -10,7 +10,7 @@ class Health(object):
 
     """Class to work around Health func"""
 
-    def __init__(self, alpha = 0.5, betha = 0.5, dataPath = "src/data.mat"):
+    def __init__(self, alpha=0.5, betha=0.5, dataPath="src/data/data.mat"):
         """
             Constructor de la clase Health
         """
@@ -35,7 +35,7 @@ class Health(object):
         """
         return math.sqrt(math.pow(x_1 - x_2, 2) + math.pow(y_1 - y_2, 2))
 
-    def countUsers(self ):
+    def countUsers(self):
         """
             Metodo para pre-calcular usuarios por antena
         """
@@ -46,9 +46,7 @@ class Health(object):
                 if Health.distance(sta[0], sta[1], user[0], user[1]) < 0.350:
                     i, j = npy.where(self.bt == sta)
                     arr[i[0]] += 1
-        
         return arr
-
 
     def g(self, id):
         """
@@ -61,7 +59,6 @@ class Health(object):
 
         return self.alpha * C1 + self.betha * (1/C2)
 
-    
 
-data =  Health()
+data = Health()
 test = data.g(Coral.getRandomID())
