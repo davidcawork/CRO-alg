@@ -1,6 +1,7 @@
 #!/usr/bin/python3
 
 import numpy as npy
+import uuid
 from numpy import core
 
 
@@ -17,6 +18,7 @@ class Coral(object):
             Coral class constructor
         """
         self.id = id
+        self.uuid = uuid.uuid4().hex
         self.health = health
 
     @staticmethod
@@ -27,11 +29,11 @@ class Coral(object):
         # Zeros and ones props with max length of 100
         k = Coral.MAX_PLACED_STAs
         p = Coral.MAX_ID_LEN
-        
+
         # Lets create the initial id
         arr = npy.array([1] * k + [0] * (p-k), dtype=npy.uint8)
 
         # Shuffleeeeeeeeeeeeee
         npy.random.shuffle(arr)
 
-        return arr 
+        return arr

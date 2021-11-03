@@ -14,6 +14,10 @@ class CRO(object):
         """
             CRO class constructor
         """
+
+        # Seed en uso
+        self.seed = 0
+
         # Tamaño de la parcela
         self.N = N
         self.M = M
@@ -42,6 +46,14 @@ class CRO(object):
         # Iniciamos el arrecife
         self.reef = self.init_reef(self.N, self.M, self.rho_zero)
 
+        # Hacemos un seguimiento del ranking
+        self.reef_ranking = self.updateRanking()
+
+        # Colas de broadcast spawning, Brooding, sea
+        self.broadcast_queque = list()
+        self.brooding_queque = list()
+        self.sea_queque = list()
+
     def init_reef(self, N, M, rho_zero):
         """
             Metodo para inicializar el arrecife
@@ -63,3 +75,33 @@ class CRO(object):
         random.shuffle(reef)
 
         return reef
+
+    def updateRanking(self):
+        """
+            Metodo para actulizar el ranking
+        """
+        return sorted(self.reef, key=lambda x: x.health, reverse=True)
+
+    def BroadcastSpawning(self):
+        """
+            Metodo para definir el proceso de boradcast spawning
+        """
+        pass
+
+    def Brooding(self):
+        """
+            Metodo para definir el proceso de Brooding
+        """
+        pass
+
+    def LarvaeSetting(self):
+        """
+            Metodo para definir el proceso de LarvaeSetting
+        """
+        pass
+
+    def Depredation(self):
+        """
+            Metodo para definir el proceso de Depredation
+        """
+        pass
