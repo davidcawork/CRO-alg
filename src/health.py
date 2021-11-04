@@ -59,6 +59,3 @@ class Health(object):
 
         return self.alpha * C1 + self.betha * (1/C2)
 
-
-data = Health()
-test = data.g(Coral.getRandomID())

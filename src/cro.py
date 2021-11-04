@@ -50,8 +50,7 @@ class CRO(object):
         self.reef_ranking = self.updateRanking()
 
         # Colas de broadcast spawning, Brooding, sea
-        self.broadcast_queque = list()
-        self.brooding_queque = list()
+        self.act_queque = list()
         self.sea_queque = list()
 
     def init_reef(self, N, M, rho_zero):
@@ -80,13 +79,43 @@ class CRO(object):
         """
             Metodo para actulizar el ranking
         """
-        return sorted(self.reef, key=lambda x: x.health, reverse=True)
+        return sorted([a for a in self.reef if a is not None], key=lambda x: x.health, reverse=True)
+
+    def updateQueues(self):
+        """
+            Metodo para actualizar las colas
+        """
+        self.act_queque = [a for a in self.reef if a is not None]
+        self.sea_queque = list()
 
     def BroadcastSpawning(self):
         """
             Metodo para definir el proceso de boradcast spawning
         """
-        pass
+
+        # Agitamos la lista y pillamos las Fb primeras
+        random.shuffle(self.act_queque)
+
+        # Vamos a iterar por todos los corales que vamos a emplear 
+        n_broadcastSpawners = int(npy.round(self.Fb*len(self.act_queque)))
+
+        # Hay que asegurarse que sean pares
+        if n_broadcastSpawners % 2 != 0:
+            n_broadcastSpawners-=1
+        
+        for j in range(0,n_broadcastSpawners):
+            parent_gen1, parent_gen2 = npy.array_split(self.act_queque[0].id, 2)
+            mother_gen1, mother_gen2 = npy.array_split(self.act_queque[1].id, 2)
+
+            # Vamos a tener en cuenta solo dos posibilidades de crossover
+            a = npy.stack(parent_gen1,mother_gen2)
+            if self.fitness.g(npy.concatenate(parent_gen1,mother_gen2)) > self.fitness.g(npy.concatenate(parent_gen2,mother_gen1)):
+                self.sea_queque.append(Coral(npy.concatenate(parent_gen1,mother_gen2), self.fitness.g(npy.concatenate(parent_gen1,mother_gen2))))
+            else:
+                self.sea_queque.append(Coral(npy.concatenate(parent_gen2,mother_gen1), self.fitness.g(npy.concatenate(parent_gen2,mother_gen1))))
+
+            # Nos quedamos con la mejor y eliminamos a los padres de la lista
+            del self.act_queque[0:1]
 
     def Brooding(self):
         """
