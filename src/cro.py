@@ -103,25 +103,50 @@ class CRO(object):
         if n_broadcastSpawners % 2 != 0:
             n_broadcastSpawners-=1
         
-        for j in range(0,n_broadcastSpawners):
+        for j in range(0,int(n_broadcastSpawners/2)):
             parent_gen1, parent_gen2 = npy.array_split(self.act_queque[0].id, 2)
             mother_gen1, mother_gen2 = npy.array_split(self.act_queque[1].id, 2)
 
             # Vamos a tener en cuenta solo dos posibilidades de crossover
-            a = npy.stack(parent_gen1,mother_gen2)
-            if self.fitness.g(npy.concatenate(parent_gen1,mother_gen2)) > self.fitness.g(npy.concatenate(parent_gen2,mother_gen1)):
-                self.sea_queque.append(Coral(npy.concatenate(parent_gen1,mother_gen2), self.fitness.g(npy.concatenate(parent_gen1,mother_gen2))))
+            if self.fitness.g(npy.concatenate((parent_gen1,mother_gen2))) > self.fitness.g(npy.concatenate((parent_gen2,mother_gen1))):
+                self.sea_queque.append(Coral(npy.concatenate((parent_gen1,mother_gen2)), self.fitness.g(npy.concatenate((parent_gen1,mother_gen2)))))
             else:
-                self.sea_queque.append(Coral(npy.concatenate(parent_gen2,mother_gen1), self.fitness.g(npy.concatenate(parent_gen2,mother_gen1))))
+                self.sea_queque.append(Coral(npy.concatenate((parent_gen2,mother_gen1)), self.fitness.g(npy.concatenate((parent_gen2,mother_gen1)))))
 
             # Nos quedamos con la mejor y eliminamos a los padres de la lista
-            del self.act_queque[0:1]
+            del self.act_queque[0:2]
+
 
     def Brooding(self):
         """
             Metodo para definir el proceso de Brooding
         """
-        pass
+        
+        # Dado que suponemos que el proceso de Broadcast spawners siempre va antes..
+
+        # Vamos a iterar por todos los corales restantes, que seran:
+        n_Brooding = len(self.act_queque)
+
+        for j in range(0, n_Brooding):
+            
+            # Hijo a mutar
+            child_mut = npy.array_split(self.act_queque[0].id, 10)
+
+            # Tiramos un numero random
+            index_mut = random.randint(0,9)
+
+            # Mutation 
+            npy.random.shuffle(child_mut[index_mut])
+
+            # Concatenate
+            child_mutated = npy.concatenate(child_mut)
+
+            # Add to the sea queque
+            self.sea_queque.append(Coral(child_mutated, self.fitness.g(child_mutated)))
+
+            # Remove it from act queque
+            self.act_queque.pop()
+
 
     def LarvaeSetting(self):
         """
