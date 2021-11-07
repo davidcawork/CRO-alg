@@ -10,7 +10,7 @@ class CRO(object):
 
     """class to describe all the logic of Coral Reef Optimization Algorithm"""
 
-    def __init__(self, N=100, M=100, rho_zero=0.2, Fb=0.8, k=30, Fa=0.1, Fd=0.1):
+    def __init__(self, N=100, M=100, rho_zero=0.2, Fb=0.8, k=30, Fa=0.1, Fd=0.1, Pd = 0.02):
         """
             CRO class constructor
         """
@@ -39,6 +39,9 @@ class CRO(object):
 
         # Grado de depredacción
         self.Fd = Fd
+
+        # Probabilidad de depredación
+        self.Pd = Pd
 
         # Iniciamos la función de salud de los corales :)
         self.fitness = Health(0.5, 0.5)
@@ -80,6 +83,36 @@ class CRO(object):
             Metodo para actulizar el ranking
         """
         return sorted([a for a in self.reef if a is not None], key=lambda x: x.health, reverse=True)
+
+
+    def getMaxFitness(self):
+        """
+            Metodo para obtener el mejor fitness
+        """
+        first = max(self.reef_ranking, key = lambda coral: coral.health)
+
+        return first.health
+
+
+    def getMinFitness(self):
+        """
+            Metodo para obtener el peor fitness
+        """
+        last = min(self.reef_ranking, key = lambda coral: coral.health)
+
+        return last.health
+
+
+    def getAvgFitness(self):
+        """
+            Metodo para obtener el fitness medio
+        """
+        avg = 0.0
+
+        for coral in self.reef_ranking:
+            avg += coral.health
+
+        return avg/len(self.reef_ranking)
 
     def updateQueues(self):
         """
@@ -152,10 +185,48 @@ class CRO(object):
         """
             Metodo para definir el proceso de LarvaeSetting
         """
-        pass
+        
+        # Vamos a iterar por todas las larvas K veces
+        for _larvae in range(0 , len(self.sea_queque)):
+            for _try in range(0, self.k):
+                
+                # Elegir una casilla i,j de forma random
+                _index = random.randint(0, (self.M * self.N) - 1)
+
+                # Si hemos llegado al k tries 
+                if _try == self.k:
+
+                    # Tiramos la larva, no ha conseguido ser emplazada
+                    self.sea_queque.pop()
+
+                    # Pasamos a la siguiente 
+                    break
+
+                elif self.reef[_index] is None:
+                    self.reef[_index] = self.sea_queque[0]
+
+                    # Tiramos la larva ya que ha sido emplazada
+                    self.sea_queque.pop()
+
+                    break
+
+                elif self.sea_queque[0].health > self.reef[_index].health:
+                    self.reef[_index] = self.sea_queque[0]
+
+                    # Tiramos la larva ya que ha sido emplazada
+                    self.sea_queque.pop()
+
+                    break
+
+
 
     def Depredation(self):
         """
             Metodo para definir el proceso de Depredation
         """
-        pass
+
+        # Hora de comeeeeee :D
+        if random.uniform(0,1) < self.Pd:
+            for j in range(0 , int(len(self.reef_ranking) * self.Fd)):
+                self.reef[self.reef.index(self.reef_ranking[-j])] = None
+ 

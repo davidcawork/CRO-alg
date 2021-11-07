@@ -22,9 +22,6 @@ if __name__ == '__main__':
         # Update queues
         CRO_obj.updateQueues()
 
-        # Upadte ranking
-        CRO_obj.reef_ranking = CRO_obj.updateRanking()
-
         # Broadcast Spawning
         CRO_obj.BroadcastSpawning()
 
@@ -36,9 +33,19 @@ if __name__ == '__main__':
 
         if i != Ngens:
 
+            # Upadte ranking
+            CRO_obj.reef_ranking = CRO_obj.updateRanking()
+
             # Depredation
             CRO_obj.Depredation()
 
+            # Upadte ranking
+            CRO_obj.reef_ranking = CRO_obj.updateRanking()
+        
+        logging.info('Best-fitness: ' + str(round(CRO_obj.getMaxFitness(), 6)) + ' | Avg-fitness: ' + str(round(CRO_obj.getAvgFitness(), 6))+ ' | Worse-fitness: ' + str(round(CRO_obj.getMinFitness(), 6))+ ' | ('+str(round(i/Ngens*100, 2))+'% Completed) ')
 
+
+        
+        
     
     
