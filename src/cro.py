@@ -10,7 +10,7 @@ class CRO(object):
 
     """class to describe all the logic of Coral Reef Optimization Algorithm"""
 
-    def __init__(self, N=100, M=100, rho_zero=0.2, Fb=0.8, k=30, Fa=0.1, Fd=0.1, Pd = 0.02):
+    def __init__(self, N=100, M=100, rho_zero=0.2, Fb=0.8, k=30, Fa=0.1, Fd=0.1, Pd = 0.02, alpha = 0.5, betha = 0.5):
         """
             CRO class constructor
         """
@@ -43,8 +43,12 @@ class CRO(object):
         # Probabilidad de depredación
         self.Pd = Pd
 
+        # Parametros de fitness
+        self.alpha = alpha
+        self.betha = betha
+
         # Iniciamos la función de salud de los corales :)
-        self.fitness = Health(0.5, 0.5)
+        self.fitness = Health(self.alpha, self.betha)
 
         # Iniciamos el arrecife
         self.reef = self.init_reef(self.N, self.M, self.rho_zero)
@@ -229,4 +233,29 @@ class CRO(object):
         if random.uniform(0,1) < self.Pd:
             for j in range(0 , int(len(self.reef_ranking) * self.Fd)):
                 self.reef[self.reef.index(self.reef_ranking[-j])] = None
+    
+    def write_historic(self, filename, data):
+        """
+            Función que genera un fichero CSV con el resultado historico
+        """
+        with open(filename + '.csv', 'w') as file:
+            file.write('gen,worse,avg,best\n')
+            for key in data:
+                file.write(
+                    f'{key},{key["worse"]},{key["avg"]},{key["best"]}\n')
+
+    def write_report(self, filename):
+        """
+            Función que genera un fichero reporte con la solucion del algoritmo
+        """
+        with open(filename + '.txt', 'w') as file:
+            file.write('-------------------------------------------------------------------------')
+            file.write('-------------------------------------------------------------------------\n')
+            file.write('Best solution:\n')
+            file.write(f'[+] Coral - ID: {self.reef_ranking[0].uuid}\n')
+            file.write(f'[+] Genome: {self.reef_ranking[0].id}\n')
+            file.write(f'[+] Fitness: {self.reef_ranking[0].health}\n')
+            file.write('-------------------------------------------------------------------------')
+            file.write('-------------------------------------------------------------------------\n')
+
  
